@@ -51,10 +51,14 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "a006f2c2";
-const query = "interstailer";
+// const query = "Interstellar";
 export default function App() {
   const [movies, setMovies] = useState([]);
+ 
+  
   const [watched, setWatched] = useState(tempWatchedData);
+
+  const [query, setQuery] = useState("");
 
   const [isLoading , setIsLoading] = useState(false);
   const [isError , setError] = useState("");
@@ -64,6 +68,7 @@ export default function App() {
       async function fetchMovies() {
     
         setIsLoading(true);
+        setError("");
         try{
       const res = await fetch(
         `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
@@ -89,13 +94,21 @@ export default function App() {
       setIsLoading(false);
     }
     }
+
+    if(query.length<3){
+      setMovies([]);
+      setError("");
+      return;
+    }
     fetchMovies();
-  }, []);
+  }, [query]);
 
 
   return (
     <>
       <NavBar>
+        <Logo />
+      <Search  query={query} onSetQuery= {setQuery}/>
         <NumResults movies={movies} />
       </NavBar>
       <Main>
@@ -108,7 +121,6 @@ export default function App() {
           
           {/* {isLoading ? <Loader/> :<MovieList movies={movies} />} */}
         </Box>
-
         <Box>
           <WatchedSummary watched={watched} />
           <WatchedMoviesList watched={watched} />
@@ -132,8 +144,7 @@ function Loader(){
 function NavBar({ children }) {
   return (
     <nav className="nav-bar">
-      <Logo />
-      <Search />
+      
       {children}
     </nav>
   );
@@ -155,15 +166,15 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query, onSetQuery}) {
+  
   return (
     <input
       className="search"
       type="text"
       placeholder="Search movies..."
       value={query}
-      onChange={(e) => setQuery(e.target.value)}
+      onChange={(e) => onSetQuery(e.target.value)}
     />
   );
 }
@@ -254,6 +265,7 @@ function Movie({ movie }) {
     <li>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
+      {console.log(movie.Title)}
       <div>
         <p>
           <span>🗓</span>
