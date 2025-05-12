@@ -63,6 +63,19 @@ export default function App() {
   const [isLoading , setIsLoading] = useState(false);
   const [isError , setError] = useState("");
 
+
+  const [selectedId,setSelectedId] = useState("");
+
+  function selectedMovie(movieId){
+   
+    
+    
+    
+        setSelectedId(movieId);
+       
+
+  }
+
   useEffect(function () {
 
       async function fetchMovies() {
@@ -82,6 +95,7 @@ export default function App() {
       console.log(data);
       
       if (data.Response === 'False') {
+        setMovies([]);
         throw new Error("Movie not found");
       }
      setMovies(data.Search);
@@ -112,22 +126,37 @@ export default function App() {
         <NumResults movies={movies} />
       </NavBar>
       <Main>
-        <Box>
+        <Box >
 
           {isLoading && <Loader/>}
           
-          {!isLoading && !isError && <MovieList movies={movies} /> }
+          {!isLoading && !isError && <MovieList movies={movies} onSetSelected = {selectedMovie} /> }
           {isError && <ErrorMessage message={isError}/>}
           
           {/* {isLoading ? <Loader/> :<MovieList movies={movies} />} */}
         </Box>
-        <Box>
-          <WatchedSummary watched={watched} />
+        <Box selectedId={selectedId}>
+          
+          {selectedId ? <WatchedList   selectedMovie = {selectedId}/> :
+          <>
+         <WatchedSummary watched={watched} />
           <WatchedMoviesList watched={watched} />
+            </>
+          }
         </Box>
       </Main>
     </>
   );
+}
+
+
+function WatchedList(selectedMovie){
+
+  return(
+    <div>
+      <p>{selectedMovie}</p></div>
+  )
+
 }
 
 function ErrorMessage({message}){
@@ -250,22 +279,25 @@ function Box({ children }) {
   );
 }
 
-function MovieList({ movies }) {
+function MovieList({ movies ,  onSetSelected }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie movie={movie} key={movie.imdbID} onSetSelected={onSetSelected} />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie  , onSetSelected}) {
+
+  
+
   return (
-    <li>
+    <li onClick={() => onSetSelected(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
-      {console.log(movie.Title)}
+      
       <div>
         <p>
           <span>🗓</span>
