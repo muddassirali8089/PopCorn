@@ -235,6 +235,13 @@ function MovieDetails({
   useEffect(function(){
     if(!title) return;
     document.title = `Movie ${title}`
+
+
+    return function(){
+      document.title = "PopCorn";
+      console.log(`clean up effect for the movie ${title}` );
+      
+    }
   },[title])
   return (
     <div className="details">
