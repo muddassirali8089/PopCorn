@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const containerStyle = {
   display: "flex",
@@ -10,8 +10,9 @@ const containerStyle = {
 
 const starContainerStyle = {
   display: "flex",
+  alignItems:"center",
+   
 };
-
 
 StarRating.propTypes = {
   maxRating: PropTypes.number,
@@ -19,22 +20,29 @@ StarRating.propTypes = {
   color: PropTypes.string,
   size: PropTypes.number,
   messages: PropTypes.array,
-  className : PropTypes.string,  
+  className: PropTypes.string,
   onSetRating: PropTypes.func,
 };
 
-export default function StarRating({ maxRating = 5 , color = "#fcc419" , size = 48, messages = [] , defaultRating = 0 , onSetRating , className = ""}) {
+export default function StarRating({
+  maxRating = 5,
+  color = "#fcc419",
+  size = 48,
+  messages = [],
+  defaultRating = 0,
+  onSetRating,
+  className = "",
+}) {
   const [rating, setRaring] = useState(defaultRating);
   const [tempRating, setTempRate] = useState(0);
 
   function handleRating(rating) {
     setRaring(rating);
 
-    onSetRating(rating)
+    onSetRating(rating);
   }
 
   function handleTempRating(tempRating) {
-    
     setTempRate(tempRating);
   }
 
@@ -42,15 +50,16 @@ export default function StarRating({ maxRating = 5 , color = "#fcc419" , size = 
     lineHeight: "1px",
     margin: "0px",
     color,
-    fontSize:`${size/1.5}px`
+    fontSize: `${size / 1.5}px`,
+    paddingLeft: "10px",
   };
   return (
-    <div style={containerStyle} className = {`${className}`}>
+    <div style={containerStyle} className={`${className}`}>
       <div style={starContainerStyle}>
         {Array.from({ length: maxRating }, (_, i) => (
           <Star
             key={i}
-            full={tempRating ? tempRating >= i + 1 : rating >= i+1}
+            full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
             onRate={() => handleRating(i + 1)}
             onHoverIn={() => handleTempRating(i + 1)}
             onHoverOut={() => handleTempRating(0)}
@@ -58,25 +67,25 @@ export default function StarRating({ maxRating = 5 , color = "#fcc419" , size = 
             size={size}
           />
         ))}
+
+         <p style={textStyle}>
+        {messages.length === maxRating
+          ? messages[tempRating ? tempRating - 1 : rating - 1]
+          : tempRating || rating || ""}
+      </p>
       </div>
 
-      <p style={textStyle}>{ messages.length === maxRating ? messages[tempRating? tempRating-1 : rating-1] : tempRating || rating || ""}</p>
+     
     </div>
   );
 }
 
-
-function Star({ full, onRate, onHoverIn ,  onHoverOut , color, size }) {
-
-
-
+function Star({ full, onRate, onHoverIn, onHoverOut, color, size }) {
   const starStyle = {
     height: `${size}px`,
     width: `${size}px`,
     display: "block",
     cursor: "pointer",
-    
-  
   };
   return (
     <span
