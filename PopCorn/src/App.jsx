@@ -231,6 +231,11 @@ function MovieDetails({
     toHandleWatchedMovie(newWatchedMovie);
     onCloseMovie(null);
   }
+
+  useEffect(function(){
+    if(!title) return;
+    document.title = `Movie ${title}`
+  },[title])
   return (
     <div className="details">
       {isLoading && <Loader />}
@@ -410,6 +415,7 @@ function Box({ children }) {
 }
 
 function MovieList({ movies, onSelectMovie }) {
+
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
