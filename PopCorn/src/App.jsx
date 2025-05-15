@@ -82,13 +82,18 @@ export default function App() {
   }
 
   useEffect(
+
     function () {
+      const controller = new AbortController();
       async function fetchMovies() {
+
+        
         setIsLoading(true);
         setError("");
         try {
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            {signal:controller.signal}
           );
           if (!res.ok) {
             throw new Error("some thing went wrong with movie data fetching");
@@ -100,9 +105,18 @@ export default function App() {
             setMovies([]);
             throw new Error("Movie not found");
           }
+          setError("");
           setMovies(data.Search);
         } catch (err) {
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
+          
+
+           if (err.name === "AbortError") {
+        console.log("✅ Request aborted:", err);
+        return;
+      }
         } finally {
           setIsLoading(false);
         }
@@ -114,6 +128,10 @@ export default function App() {
         return;
       }
       fetchMovies();
+       return () => {
+    console.log("🧹 Cleanup: aborting previous request");
+    controller.abort(); // abort previous fetch before next starts
+  };
     },
     [query]
   );
