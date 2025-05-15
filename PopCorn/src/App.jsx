@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating.jsx";
+
+
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -55,7 +57,10 @@ const KEY = "a006f2c2";
 export default function App() {
   const [movies, setMovies] = useState([]);
 
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(() => {
+  const storedValue = localStorage.getItem("watched");
+  return storedValue ? JSON.parse(storedValue) : [];
+});
 
   const [query, setQuery] = useState("inception");
 
@@ -81,6 +86,10 @@ export default function App() {
     setSelectedId(null);
   }
 
+  useEffect(() => {
+  localStorage.setItem("watched", JSON.stringify(watched));
+}, [watched]);
+
   useEffect(
     function () {
       const controller = new AbortController();
@@ -89,7 +98,7 @@ export default function App() {
         setError("");
         try {
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
             { signal: controller.signal }
           );
           if (!res.ok) {
@@ -217,7 +226,7 @@ function MovieDetails({
 
         try {
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+            `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
           );
           const data = await res.json();
           if (!res.ok) {
@@ -307,7 +316,7 @@ function MovieDetails({
                 <>
                   <StarRating
                     maxRating={10}
-                    size={22}
+                    size={32}
                     onSetRating={setUserRating}
                   />
                   {userRating && (
@@ -358,7 +367,7 @@ function Logo() {
   return (
     <div className="logo">
       <span role="img">🍿</span>
-      <h1>usePopcorn</h1>
+      <h1 className="PopCorn">Popcorn</h1>
     </div>
   );
 }
