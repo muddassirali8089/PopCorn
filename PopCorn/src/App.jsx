@@ -82,18 +82,15 @@ export default function App() {
   }
 
   useEffect(
-
     function () {
       const controller = new AbortController();
       async function fetchMovies() {
-
-        
         setIsLoading(true);
         setError("");
         try {
           const res = await fetch(
             `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            {signal:controller.signal}
+            { signal: controller.signal }
           );
           if (!res.ok) {
             throw new Error("some thing went wrong with movie data fetching");
@@ -111,12 +108,11 @@ export default function App() {
           if (err.name !== "AbortError") {
             setError(err.message);
           }
-          
 
-           if (err.name === "AbortError") {
-        console.log("✅ Request aborted:", err);
-        return;
-      }
+          if (err.name === "AbortError") {
+            console.log("✅ Request aborted:", err);
+            return;
+          }
         } finally {
           setIsLoading(false);
         }
@@ -127,11 +123,12 @@ export default function App() {
         setError("");
         return;
       }
+      handleCloseMovie();
       fetchMovies();
-       return () => {
-    console.log("🧹 Cleanup: aborting previous request");
-    controller.abort(); // abort previous fetch before next starts
-  };
+      return () => {
+        console.log("🧹 Cleanup: aborting previous request");
+        controller.abort(); // abort previous fetch before next starts
+      };
     },
     [query]
   );
@@ -194,6 +191,25 @@ function MovieDetails({
   const watchedUserRating = watchedMovieArray.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating;
+
+  useEffect(
+    function () {
+      document.addEventListener("keydown", callback);
+      function callback(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+          console.log("closed");
+        }
+      }
+
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+
+    [onCloseMovie]
+  );
+
   useEffect(
     function () {
       async function getMovieDetails() {
@@ -209,6 +225,7 @@ function MovieDetails({
           }
 
           setMovie(data);
+        
           setIsLoading(false);
         } catch (error) {
           setError(error.message);
@@ -249,18 +266,18 @@ function MovieDetails({
     toHandleWatchedMovie(newWatchedMovie);
     onCloseMovie(null);
   }
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie ${title}`;
 
-  useEffect(function(){
-    if(!title) return;
-    document.title = `Movie ${title}`
-
-
-    return function(){
-      document.title = "PopCorn";
-      console.log(`clean up effect for the movie ${title}` );
-      
-    }
-  },[title])
+      return function () {
+        document.title = "PopCorn";
+        console.log(`clean up effect for the movie ${title}`);
+      };
+    },
+    [title]
+  );
   return (
     <div className="details">
       {isLoading && <Loader />}
@@ -440,7 +457,6 @@ function Box({ children }) {
 }
 
 function MovieList({ movies, onSelectMovie }) {
-
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
