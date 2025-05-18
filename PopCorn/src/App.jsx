@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating.jsx";
 import { useMovies } from "./CustomHooks/useMovies.jsx";
 import { useLocalStorageState } from "./CustomHooks/useLocalStorageState.jsx";
+import{useKey} from "./CustomHooks/useKey.jsx";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -9,7 +10,7 @@ const average = (arr) =>
 const KEY = "a006f2c2";
 export default function App() {
   const [query, setQuery] = useState("inception");
-  const { movies , isLoading , isError} = useMovies(query , handleCloseMovie);
+  const { movies , isLoading , isError} = useMovies(query);
    const [watched , setWatched] = useLocalStorageState([] , "watched");
 
   // const [watched, setWatched] = useState(() => {
@@ -158,23 +159,25 @@ function MovieDetails({
     (movie) => movie.imdbID === selectedId
   )?.userRating;
 
-  useEffect(
-    function () {
-      document.addEventListener("keydown", callback);
-      function callback(e) {
-        if (e.code === "Escape") {
-          onCloseMovie();
-          console.log("closed");
-        }
-      }
 
-      return function () {
-        document.removeEventListener("keydown", callback);
-      };
-    },
+  useKey("Escape" , onCloseMovie);
+  // useEffect(
+  //   function () {
+  //     document.addEventListener("keydown", callback);
+  //     function callback(e) {
+  //       if (e.code === "Escape") {
+  //         onCloseMovie();
+  //         console.log("closed");
+  //       }
+  //     }
 
-    [onCloseMovie]
-  );
+  //     return function () {
+  //       document.removeEventListener("keydown", callback);
+  //     };
+  //   },
+
+  //   [onCloseMovie]
+  // );
 
   useEffect(
     function () {
@@ -331,22 +334,37 @@ function Logo() {
 
 function Search({ query, onSetQuery }) {
   const search = useRef(null);
-  useEffect(function () {
-    search.current.focus()
-    function callback(e) {
-      
-      if(document.activeElement === search.current)
+useEffect(() => {
+    search.current.focus();
+  }, []);
+
+  useKey("Enter" , function(){
+    
+
+    
+    if(document.activeElement === search.current)
         return
-      if (e.code === "Enter") {
-        search.current.focus();
+      // it well focus again..
+      search.current.focus();
         onSetQuery("");
-      }
-    }
 
-    document.addEventListener("keydown", callback);
-    return () => document.removeEventListener("keydown", callback);
+  } )
+  // useEffect(function () {
+  //   search.current.focus()
+  //   function callback(e) {
+      
+  //     if(document.activeElement === search.current)
+  //       return
+  //     if (e.code === "Enter") {
+  //       search.current.focus();
+  //       onSetQuery("");
+  //     }
+  //   }
 
-  }, [onSetQuery]);
+  //   document.addEventListener("keydown", callback);
+  //   return () => document.removeEventListener("keydown", callback);
+
+  // }, [onSetQuery]);
 
   return (
     <input
