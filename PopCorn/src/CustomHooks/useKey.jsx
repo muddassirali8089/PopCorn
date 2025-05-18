@@ -7,7 +7,7 @@ export function useKey (Key , action){
     function () {
       document.addEventListener("keydown", callback);
       function callback(e) {
-        console.log("callback function call.............");
+        
         
         if (e.code.toLowerCase() === Key.toLowerCase() ) {
           action();

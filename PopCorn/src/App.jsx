@@ -3,6 +3,7 @@ import StarRating from "./StarRating.jsx";
 import { useMovies } from "./CustomHooks/useMovies.jsx";
 import { useLocalStorageState } from "./CustomHooks/useLocalStorageState.jsx";
 import{useKey} from "./CustomHooks/useKey.jsx";
+import { useGetMovieDetails } from "./CustomHooks/useGetMovieDetails.jsx";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -147,9 +148,9 @@ function MovieDetails({
   toHandleWatchedMovie,
   watchedMovieArray,
 }) {
-  const [movie, setMovie] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setError] = useState("");
+  // const [movie, setMovie] = useState({});
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [isError, setError] = useState("");
   const [userRating, setUserRating] = useState("");
   const isWatched = watchedMovieArray
     .map((movie) => movie.imdbID)
@@ -178,34 +179,34 @@ function MovieDetails({
 
   //   [onCloseMovie]
   // );
+  const { movie , isLoading , isError} = useGetMovieDetails(selectedId);
+  // useEffect(
+  //   function () {
+  //     async function getMovieDetails() {
+  //       setIsLoading(true);
 
-  useEffect(
-    function () {
-      async function getMovieDetails() {
-        setIsLoading(true);
+  //       try {
+  //         const res = await fetch(
+  //           `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+  //         );
+  //         const data = await res.json();
+  //         if (!res.ok) {
+  //           throw new Error("some thing wrong with data fetching...");
+  //         }
 
-        try {
-          const res = await fetch(
-            `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
-          );
-          const data = await res.json();
-          if (!res.ok) {
-            throw new Error("some thing wrong with data fetching...");
-          }
+  //         setMovie(data);
 
-          setMovie(data);
-
-          setIsLoading(false);
-        } catch (error) {
-          setError(error.message);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      getMovieDetails();
-    },
-    [selectedId]
-  );
+  //         setIsLoading(false);
+  //       } catch (error) {
+  //         setError(error.message);
+  //       } finally {
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //     getMovieDetails();
+  //   },
+  //   [selectedId]
+  // );
 
   const {
     Title: title,
