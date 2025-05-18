@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating.jsx";
 import { useMovies } from "./CustomHooks/useMovies.jsx";
+import { useLocalStorageState } from "./CustomHooks/useLocalStorageState.jsx";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -9,17 +10,16 @@ const KEY = "a006f2c2";
 export default function App() {
   const [query, setQuery] = useState("inception");
   const { movies , isLoading , isError} = useMovies(query , handleCloseMovie);
+   const [watched , setWatched] = useLocalStorageState([] , "watched");
 
-  const [watched, setWatched] = useState(() => {
-    const storedValue = localStorage.getItem("watched");
-    console.log("get the data from local storage...");
+  // const [watched, setWatched] = useState(() => {
+  //   const storedValue = localStorage.getItem("watched");
+  //   console.log("get the data from local storage...");
 
-    return JSON.parse(storedValue);
-  });
+  //   return storedValue ? JSON.parse(storedValue) : [] ;
+  // });
 
   
-
- 
 
   const [selectedId, setSelectedId] = useState(null);
 
@@ -42,10 +42,10 @@ export default function App() {
     setSelectedId(null);
   }
 
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-    console.log("the item is set sucessfullu...");
-  }, [watched]);
+  // useEffect(() => {
+  //   localStorage.setItem("watched", JSON.stringify(watched));
+  //   console.log("the item is set sucessfullu...");
+  // }, [watched]);
 
   // useEffect(
   //   function () {
